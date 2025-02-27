@@ -41,7 +41,7 @@ namespace TestTemplate15.Api
 
         public Startup(IConfiguration configuration, IHostEnvironment hostEnvironment)
         {
-            _configuration = configuration;
+            _configuration = configuration; 
             _hostEnvironment = hostEnvironment;
         }
 
