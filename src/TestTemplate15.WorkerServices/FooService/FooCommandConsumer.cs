@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using TestTemplate15.Core.Events;
@@ -17,15 +16,15 @@ namespace TestTemplate15.WorkerServices.FooService
 
         public class FooCommandConsumerDefinition : ConsumerDefinition<FooCommandConsumer>
         {
-            private readonly IServiceProvider _provider;
-
-            public FooCommandConsumerDefinition(IServiceProvider provider)
+            public FooCommandConsumerDefinition()
             {
                 EndpointName = $"{WorkerAssemblyInfo.ServiceName.ToLower()}-foo-command-queue";
-                _provider = provider;
             }
 
-            protected override void ConfigureConsumer(IReceiveEndpointConfigurator endpointConfigurator, IConsumerConfigurator<FooCommandConsumer> consumerConfigurator)
+            protected override void ConfigureConsumer(
+                IReceiveEndpointConfigurator endpointConfigurator,
+                IConsumerConfigurator<FooCommandConsumer> consumerConfigurator,
+                IRegistrationContext context)
             {
                 // Configure message retry with millisecond intervals.
                 // endpointConfigurator.UseMessageRetry(r => r.Intervals(100, 200, 500, 800, 1000));
@@ -33,7 +32,7 @@ namespace TestTemplate15.WorkerServices.FooService
                 // endpointConfigurator.ConfigureConsumeTopology = false;
 
                 // Use the outbox to prevent duplicate events from being published.
-                endpointConfigurator.UseEntityFrameworkOutbox<TestTemplate15DbContext>(_provider);
+                endpointConfigurator.UseEntityFrameworkOutbox<TestTemplate15DbContext>(context);
             }
         }
     }
