@@ -3,13 +3,13 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MassTransit;
 using MediatR;
-using TestTemplate15.Application.Questions.Queries;
+using TestTemplate15.Application.Foos.Queries;
 using TestTemplate15.Common.Exceptions;
 using TestTemplate15.Common.Interfaces;
 using TestTemplate15.Core.Entities;
 using TestTemplate15.Core.Events;
 
-namespace TestTemplate15.Application.Questions.Commands
+namespace TestTemplate15.Application.Foos.Commands
 {
     public class CreateFooCommand : IRequest<FooGetModel>
     {

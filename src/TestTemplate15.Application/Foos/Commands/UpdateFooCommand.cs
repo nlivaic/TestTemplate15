@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 
-namespace TestTemplate15.Application.Questions.Commands
+namespace TestTemplate15.Application.Foos.Commands
 {
     public class UpdateFooCommand : IRequest<Unit>
     {

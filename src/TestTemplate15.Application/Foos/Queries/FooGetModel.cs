@@ -2,7 +2,7 @@ using System;
 using AutoMapper;
 using TestTemplate15.Core.Entities;
 
-namespace TestTemplate15.Application.Questions.Queries
+namespace TestTemplate15.Application.Foos.Queries
 {
     public class FooGetModel
     {

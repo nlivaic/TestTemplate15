@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Azure.Monitor.OpenTelemetry.Exporter;
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using MassTransit;
 using MassTransit.Logging;
@@ -12,7 +13,6 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -26,7 +26,6 @@ using OpenTelemetry.Trace;
 using SparkRoseDigital.Infrastructure.Caching;
 using SparkRoseDigital.Infrastructure.HealthCheck;
 using SparkRoseDigital.Infrastructure.Logging;
-using TestTemplate15.Api.Helpers;
 using TestTemplate15.Api.Middlewares;
 using TestTemplate15.Application;
 using TestTemplate15.Core;
@@ -41,39 +40,23 @@ namespace TestTemplate15.Api
 
         public Startup(IConfiguration configuration, IHostEnvironment hostEnvironment)
         {
-            _configuration = configuration; 
+            _configuration = configuration;
             _hostEnvironment = hostEnvironment;
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services
-                .AddControllers(configure =>
-                {
-                    configure.ReturnHttpNotAcceptable = true;
-                    configure.Filters.Add(new ProducesResponseTypeAttribute(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest));
-                    configure.Filters.Add(new ProducesResponseTypeAttribute(typeof(ProblemDetails), StatusCodes.Status404NotFound));
-                    configure.Filters.Add(new ProducesResponseTypeAttribute(typeof(object), StatusCodes.Status406NotAcceptable));
-                    configure.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status500InternalServerError));
-                })
-                .ConfigureApiBehaviorOptions(options =>
-                {
-                    options.InvalidModelStateResponseFactory = actionContext =>
-                    {
-                        var actionExecutingContext = actionContext as ActionExecutingContext;
-                        var validationProblemDetails = ValidationProblemDetailsFactory.Create(actionContext);
-                        if (actionContext.ModelState.ErrorCount > 0
-                            && actionExecutingContext?.ActionArguments.Count == actionContext.ActionDescriptor.Parameters.Count)
-                        {
-                            validationProblemDetails.Status = StatusCodes.Status422UnprocessableEntity;
-                            return new UnprocessableEntityObjectResult(validationProblemDetails);
-                        }
-                        validationProblemDetails.Status = StatusCodes.Status400BadRequest;
-                        return new BadRequestObjectResult(validationProblemDetails);
-                    };
-                })
-                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
+            services.AddControllers(configure =>
+            {
+                configure.ReturnHttpNotAcceptable = true;
+                configure.Filters.Add(new ProducesResponseTypeAttribute(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest));
+                configure.Filters.Add(new ProducesResponseTypeAttribute(typeof(ProblemDetails), StatusCodes.Status404NotFound));
+                configure.Filters.Add(new ProducesResponseTypeAttribute(typeof(object), StatusCodes.Status406NotAcceptable));
+                configure.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status500InternalServerError));
+            });
+            services.AddFluentValidationAutoValidation();
+            services.AddValidatorsFromAssemblyContaining<Startup>();
 
             services.AddDbContext<TestTemplate15DbContext>(options =>
             {
