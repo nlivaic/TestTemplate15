@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -48,8 +49,7 @@ namespace TestTemplate15.Api.Tests.Helpers
                 services
                     .AddAuthentication("Test")
                     .AddScheme<TestAuthenticationOptions, TestAuthenticationHandler>("Test", null);
-                services.Remove(services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<TestTemplate15DbContext>)));
-                services.Remove(services.SingleOrDefault(d => d.ServiceType == typeof(DbConnection)));
+                services.Remove(services.SingleOrDefault(d => d.ServiceType == typeof(IDbContextOptionsConfiguration<TestTemplate15DbContext>)));
                 services.AddDbContext<TestTemplate15DbContext>(options =>
                 {
                     options.UseSqlServer(_msSqlContainer.ConnectionString);
